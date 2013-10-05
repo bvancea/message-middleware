@@ -1,4 +1,4 @@
-package ch.ethz.asl.message.log;
+package ch.ethz.asl.message.shared.log;
 
 import java.util.logging.Logger;
 

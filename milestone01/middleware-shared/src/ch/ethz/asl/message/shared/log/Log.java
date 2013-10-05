@@ -1,4 +1,4 @@
-package ch.ethz.asl.message.log;
+package ch.ethz.asl.message.shared.log;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,7 +16,7 @@ public class Log {
     }
 
     public void error(String msg, Throwable throwable) {
-        this.logger.log(Level.SEVERE , msg, throwable);
+        this.logger.log(Level.SEVERE, msg, throwable);
     }
 
     public void error(String msg) {
