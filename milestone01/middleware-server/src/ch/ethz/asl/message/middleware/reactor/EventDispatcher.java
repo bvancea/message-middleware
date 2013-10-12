@@ -1,7 +1,7 @@
 package ch.ethz.asl.message.middleware.reactor;
 
-import ch.ethz.asl.message.domain.log.Log;
-import ch.ethz.asl.message.domain.log.LogFactory;
+import ch.ethz.asl.message.shared.log.Log;
+import ch.ethz.asl.message.shared.log.LogFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

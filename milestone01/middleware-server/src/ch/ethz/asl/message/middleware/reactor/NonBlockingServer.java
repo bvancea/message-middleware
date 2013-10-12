@@ -1,7 +1,7 @@
 package ch.ethz.asl.message.middleware.reactor;
 
-import ch.ethz.asl.message.domain.log.Log;
-import ch.ethz.asl.message.domain.log.LogFactory;
+import ch.ethz.asl.message.shared.log.Log;
+import ch.ethz.asl.message.shared.log.LogFactory;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
 public class NonBlockingServer {
 
     private static final int SERVER_PORT = 9000;
-    private static final int POOL_SIZE   = 10;
+    private static final int POOL_SIZE   = 1;
 
     private static final Log LOG = LogFactory.getLog(NonBlockingServer.class);
 

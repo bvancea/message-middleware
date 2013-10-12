@@ -1,7 +1,7 @@
 package ch.ethz.asl.message.middleware.reactor;
 
-import ch.ethz.asl.message.domain.log.Log;
-import ch.ethz.asl.message.domain.log.LogFactory;
+import ch.ethz.asl.message.shared.log.Log;
+import ch.ethz.asl.message.shared.log.LogFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -63,17 +63,24 @@ public class EventHandler implements Runnable {
                     processWriteEvent(event);
                 }
             }
+            events.remove();
         }
     }
 
     private void processWriteEvent(SelectionKey event) throws IOException {
         final SocketChannel channel = getChannel(event);
 
-        channel.write(response);
+        try {
+            channel.write(response);
+            LOG.info("Writing " + response + " to client " + channel.getRemoteAddress());
 
-        LOG.info("Writing " + response + " to client " + channel.getRemoteAddress());
+            registerForReadEvents();
+        } catch (IOException e) {
+            LOG.error("Error writing response back to client", e);
+            channel.close();
+        }
 
-        registerForReadEvents();
+
     }
 
     private void processReadEvent(SelectionKey event) throws IOException {
