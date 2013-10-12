@@ -18,7 +18,7 @@ public class XNonBlockingServer {
 
     public static void main(String[] args) throws IOException {
         try {
-            EventDispatcher dispatcher = new EventDispatcher(SERVER_PORT, POOL_SIZE);
+            XEventDispatcher dispatcher = new XEventDispatcher(SERVER_PORT, POOL_SIZE);
             final Thread dispatcherThread = new Thread(dispatcher);
             dispatcherThread.start();
 
