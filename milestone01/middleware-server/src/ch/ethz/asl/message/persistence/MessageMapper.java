@@ -1,42 +1,60 @@
 package ch.ethz.asl.message.persistence;
 
+import ch.ethz.asl.message.domain.*;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-public class MessageMapper extends AbstractMapper {
+public class MessageMapper extends AbstractMapper<Message> {
 
-	public MessageMapper() {
-		// TODO Auto-generated constructor stub
-	}
 
-	@Override
-	public Object persist(Object entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected java.lang.String persistStatement() {
+        return "{call add_message(?, ?, ?)}";
+    }
 
-	@Override
-	public Object findOne(int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected java.lang.String findStatement() {
+        return "{call find_message(?)}";
+    }
 
-	@Override
-	public List findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected java.lang.String findAllStatement() {
+        return "{call find_messages()}";
+    }
 
-	@Override
-	public void delete(int id) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    protected java.lang.String deleteStatement() {
+        return "{call delete_message(?)";
+    }
 
-	@Override
-	public List find(Map conditions) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<Object> toDatabaseParams(Message entity) {
+
+        return Arrays.asList((Object)   entity.getId(),
+                                        entity.getSender(),
+                                        entity.getReceiver(),
+                                        entity.getQueue(),
+                                        entity.getPriority(),
+                                        entity.getContext(),
+                                        entity.getTimestamp(),
+                                        entity.getContent());
+    }
+
+    @Override
+    public Message load(ResultSet rs) throws SQLException {
+        Message message = new Message();
+        message.setId(rs.getInt(1));
+        message.setSender(rs.getInt(2));
+        message.setReceiver(rs.getInt(3));
+        message.setQueue(rs.getInt(4));
+        message.setPriority(rs.getInt(5));
+        message.setContext(rs.getInt(6));
+        message.setTimestamp(rs.getTimestamp(7));
+        message.setContent(rs.getString(8));
+        return message;
+    }
 
 }

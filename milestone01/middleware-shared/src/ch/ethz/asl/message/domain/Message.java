@@ -8,7 +8,7 @@ public class Message {
 	private int id;
 	private int sender;
 	private int receiver;
-	private String content;
+	private java.lang.String content;
 	private List<Integer> queue;
 	private int priority;
 	private Timestamp timestamp;
@@ -38,10 +38,10 @@ public class Message {
 	public void setContext(int context) {
 		this.context = context;
 	}
-	public String getContent() {
+	public java.lang.String getContent() {
 		return content;
 	}
-	public void setContent(String content) {
+	public void setContent(java.lang.String content) {
 		this.content = content;
 	}
 	public int getPriority() {

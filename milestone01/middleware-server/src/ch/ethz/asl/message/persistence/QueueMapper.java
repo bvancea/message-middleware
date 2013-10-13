@@ -1,40 +1,42 @@
 package ch.ethz.asl.message.persistence;
 
-import java.util.List;
-import java.util.Map;
-
 import ch.ethz.asl.message.domain.Queue;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 public class QueueMapper extends AbstractMapper<Queue>{
 
-	@Override
-	public Queue persist(Queue entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected java.lang.String persistStatement() {
+        return "{call add_queue(?, ?)}";
+    }
 
-	@Override
-	public Queue findOne(int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected java.lang.String findStatement() {
+        return "{call find_queue(?)}";
+    }
 
-	@Override
-	public List<Queue> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected java.lang.String findAllStatement() {
+        return "{call find_queues()}";
+    }
 
-	@Override
-	public void delete(int id) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    protected java.lang.String deleteStatement() {
+        return "{call delete_queue(?)";
+    }
 
-	@Override
-	public List<Queue> find(Map<String, Object> conditions) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<Object> toDatabaseParams(Queue entity) {
+        return Arrays.asList( (Object) entity.getId(), entity.getName(), entity.getCreator() );
+    }
+
+    @Override
+    public Queue load(ResultSet rs) throws SQLException {
+        return new Queue(rs.getInt(1), rs.getString(2), rs.getInt(3));
+    }
 
 }

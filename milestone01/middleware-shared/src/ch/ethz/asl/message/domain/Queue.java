@@ -4,14 +4,20 @@ public class Queue {
 	
 	private int id;
 	private String name;
-	private Client creator;
-	
-	public Queue(String name, Client creator) {
+	private int creator;
+
+	public Queue(String name, int creator) {
 		this.name = name;
 		this.creator = creator;
 	}
 
-	public int getId() {
+    public Queue(int id, String name, int creator) {
+        this.id = id;
+        this.name = name;
+        this.creator = creator;
+    }
+
+    public int getId() {
 		return id;
 	}
 
@@ -27,11 +33,11 @@ public class Queue {
 		this.name = name;
 	}
 
-	public Client getCreator() {
+	public int getCreator() {
 		return creator;
 	}
 
-	public void setCreator(Client creator) {
+	public void setCreator(int creator) {
 		this.creator = creator;
 	}
 	
