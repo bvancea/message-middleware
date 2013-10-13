@@ -1,6 +1,11 @@
 package ch.ethz.asl.message;
 
-public interface MessageBrokerFactory {
+import ch.ethz.asl.message.impl.MessageBrokerImpl;
+import exception.SendMessageException;
+import exception.ServerConnectionException;
+import exception.WrongResponseException;
+
+public class MessageBrokerFactory {
 
 	/**
 	 * Authenticate the client using the given credentials and create a MessageBroker instance to allow the 
@@ -10,7 +15,14 @@ public interface MessageBrokerFactory {
 	 * @param username
 	 * @param password
 	 * @return
+	 * @throws ServerConnectionException 
+	 * @throws SendMessageException 
+	 * @throws WrongResponseException 
 	 */
-	public MessageBroker createMessageBroker(String url, int port, String username, String password);
+	public static MessageBroker createMessageBroker(String url, int port, String username, String password) 
+			throws WrongResponseException, SendMessageException, ServerConnectionException {
+		
+		return (new MessageBrokerImpl(username, password, url, port));
+	}
 	
 }

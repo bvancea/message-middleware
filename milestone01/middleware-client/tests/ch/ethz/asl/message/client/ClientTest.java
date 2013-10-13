@@ -2,6 +2,8 @@ package ch.ethz.asl.message.client;
 
 import org.junit.Test;
 
+import ch.ethz.asl.client.Client;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
@@ -13,7 +15,7 @@ public class ClientTest {
 
         Client client = new Client();
         for (int i = 0; i < ITERATIONS; i++) {
-            client.sentMessage("Someething something dark side");
+            client.sendMessage("Someething something dark side");
         }
     }
 }
