@@ -1,6 +1,7 @@
 package ch.ethz.asl.message.domain;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class Message {
 
@@ -8,10 +9,10 @@ public class Message {
 	private int sender;
 	private int receiver;
 	private String content;
-	private int queue;
+	private List<Integer> queue;
 	private int priority;
 	private Timestamp timestamp;
-	private MessageContext context;
+	private int context;
 	
 	public int getId() {
 		return id;
@@ -31,10 +32,10 @@ public class Message {
 	public void setReceiver(int receiver) {
 		this.receiver = receiver;
 	}
-	public MessageContext getContext() {
+	public int getContext() {
 		return context;
 	}
-	public void setContext(MessageContext context) {
+	public void setContext(int context) {
 		this.context = context;
 	}
 	public String getContent() {
@@ -42,12 +43,6 @@ public class Message {
 	}
 	public void setContent(String content) {
 		this.content = content;
-	}
-	public int getQueue() {
-		return queue;
-	}
-	public void setQueue(int queue) {
-		this.queue = queue;
 	}
 	public int getPriority() {
 		return priority;
@@ -60,6 +55,12 @@ public class Message {
 	}
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
+	}
+	public List<Integer> getQueue() {
+		return queue;
+	}
+	public void setQueue(List<Integer> queue) {
+		this.queue = queue;
 	}
 	
 	
