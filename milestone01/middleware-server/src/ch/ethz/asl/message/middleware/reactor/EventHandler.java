@@ -37,7 +37,7 @@ public class EventHandler implements Runnable {
     @Override
     public void run() {
         try {
-            registerForReadEvents();
+            registerForReadEvents(clientSocketChannel);
 
             while (isConnectionOpen()) {
                 listenForEvents();
@@ -71,10 +71,10 @@ public class EventHandler implements Runnable {
         final SocketChannel channel = getChannel(event);
 
         try {
-            channel.write(response);
-            LOG.info("Writing " + response + " to client " + channel.getRemoteAddress());
+            channel.write(ByteBuffer.wrap("HTTP/1.1 200 OK\n".getBytes()));
+            LOG.info("Writing HTTP/1.1 200 OK to client " + channel.getRemoteAddress());
 
-            registerForReadEvents();
+            registerForReadEvents(channel);
         } catch (IOException e) {
             LOG.error("Error writing response back to client", e);
             channel.close();
@@ -92,15 +92,15 @@ public class EventHandler implements Runnable {
 
         LOG.info("Read " + message + " from client " + channel.getRemoteAddress());
 
-        registerForWriteEvents();
+        registerForWriteEvents(channel);
     }
 
-    private void registerForReadEvents() throws ClosedChannelException {
-        clientSocketChannel.register(eventSelector, SelectionKey.OP_READ);
+    private void registerForReadEvents(final SocketChannel channel) throws ClosedChannelException {
+        channel.register(eventSelector.wakeup(), SelectionKey.OP_READ);
     }
 
-    private void registerForWriteEvents() throws ClosedChannelException {
-        clientSocketChannel.register(eventSelector, SelectionKey.OP_WRITE);
+    private void registerForWriteEvents(final SocketChannel channel) throws ClosedChannelException {
+        channel.register(eventSelector.wakeup(), SelectionKey.OP_WRITE);
     }
 
     public boolean isConnectionOpen() {
