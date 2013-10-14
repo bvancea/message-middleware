@@ -60,7 +60,7 @@ public class MessageSenderBrokerImpl implements MessageSenderBroker {
 			String sendMsg = MessageUtils.encodeMessage(CommandType.SEND_MESSAGE, params, connectionID);
 			try {
 				String received = communicator.sendMessage(sendMsg);
-				status = (Integer)MessageUtils.decodeMessage(CommandType.SEND_MESSAGE, received);
+				status = (Integer)MessageUtils.decodeResponseMessage(CommandType.SEND_MESSAGE, received);
 			} catch (ExecutionException | InterruptedException e) {
 				log.error("Communicator failed to send message.", e);
 				throw new SendMessageException();
@@ -94,7 +94,7 @@ public class MessageSenderBrokerImpl implements MessageSenderBroker {
 			String sendMsg = MessageUtils.encodeMessage(CommandType.SEND_MESSAGE, params, connectionID);
 			try {
 				String received = communicator.sendMessage(sendMsg);
-				status = (Integer)MessageUtils.decodeMessage(CommandType.SEND_MESSAGE, received);
+				status = (Integer)MessageUtils.decodeResponseMessage(CommandType.SEND_MESSAGE, received);
 			} catch (ExecutionException | InterruptedException e) {
 				log.error("Communicator failed to send message.", e);
 				throw new SendMessageException();

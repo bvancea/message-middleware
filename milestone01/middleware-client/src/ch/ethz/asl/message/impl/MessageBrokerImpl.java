@@ -72,13 +72,12 @@ public class MessageBrokerImpl implements MessageBroker {
 					ServerConnectionException, WrongResponseException, SendMessageException {
 		if (communicator != null) {
 			if (connectionID != -1) {
-				String[] params = new String[2];
+				String[] params = new String[1];
 				params[0] = name;
-				params[1] = username;
 				String message = MessageUtils.encodeMessage(CommandType.CREATE_QUEUE, params, connectionID);
 				try {
 					String response = communicator.sendMessage(message);
-					Queue queue = (Queue)MessageUtils.decodeMessage(CommandType.CREATE_QUEUE, response);
+					Queue queue = (Queue)MessageUtils.decodeResponseMessage(CommandType.CREATE_QUEUE, response);
 					return queue;
 				} catch (ExecutionException | InterruptedException e) {
 					log.error("Exception when sending create queue command.", e);
@@ -103,7 +102,7 @@ public class MessageBrokerImpl implements MessageBroker {
 				String message = MessageUtils.encodeMessage(CommandType.FIND_QUEUE, params, connectionID);
 				try {
 					String response = communicator.sendMessage(message);
-					Queue queue = (Queue)MessageUtils.decodeMessage(CommandType.FIND_QUEUE, response);
+					Queue queue = (Queue)MessageUtils.decodeResponseMessage(CommandType.FIND_QUEUE, response);
 					return queue;
 				} catch (ExecutionException | InterruptedException e) {
 					log.error("Exception when sending find queue command.", e);
@@ -128,7 +127,7 @@ public class MessageBrokerImpl implements MessageBroker {
 				String message = MessageUtils.encodeMessage(CommandType.DELETE_QUEUE, params, connectionID);
 				try {
 					String response = communicator.sendMessage(message);
-					int status = (Integer)MessageUtils.decodeMessage(CommandType.DELETE_QUEUE, response);
+					int status = (Integer)MessageUtils.decodeResponseMessage(CommandType.DELETE_QUEUE, response);
 					return status;
 				} catch (ExecutionException | InterruptedException e) {
 					log.error("Exception when sending delete queue command.", e);
@@ -165,7 +164,7 @@ public class MessageBrokerImpl implements MessageBroker {
 			String message = MessageUtils.encodeMessage(CommandType.AUTHENTICATE, params, -2);
 			try {
 				String received = communicator.sendMessage(message);
-				int id = (Integer)MessageUtils.decodeMessage(CommandType.AUTHENTICATE, received);
+				int id = (Integer)MessageUtils.decodeResponseMessage(CommandType.AUTHENTICATE, received);
 				return id;
 			} catch (ExecutionException | InterruptedException e) {
 				log.error("Could not send authentication message", e);
