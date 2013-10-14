@@ -1,6 +1,5 @@
 package ch.ethz.asl.message.middleware.reactor.x;
 
-import ch.ethz.asl.message.middleware.reactor.EventDispatcher;
 import ch.ethz.asl.message.shared.log.Log;
 import ch.ethz.asl.message.shared.log.LogFactory;
 

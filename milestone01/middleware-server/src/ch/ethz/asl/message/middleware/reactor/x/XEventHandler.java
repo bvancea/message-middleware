@@ -86,6 +86,7 @@ public class XEventHandler extends Thread {
         } catch (IOException e) {
             LOG.error("Error writing response back to client", e);
             channel.close();
+            clientChannels.remove(channel);
         }
 
     }
