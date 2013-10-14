@@ -8,6 +8,7 @@ import ch.ethz.asl.exceptions.ServerConnectionException;
 import ch.ethz.asl.exceptions.WrongResponseException;
 import ch.ethz.asl.message.MessageBroker;
 import ch.ethz.asl.message.MessageBrokerFactory;
+import ch.ethz.asl.message.MessageSenderBroker;
 import ch.ethz.asl.message.domain.Message;
 import ch.ethz.asl.message.domain.Queue;
 import ch.ethz.asl.message.shared.log.Log;
@@ -17,14 +18,11 @@ public abstract class Client {
 	
 	protected Log log = LogFactory.getLog(getClass());
 	protected MessageBroker messageBroker;
+	protected MessageSenderBroker messageSenderBroker;
 	protected String username;
 	protected String password;
 	protected String url = "localhost";
 	protected int port = 9000;
-	
-	public Client() {
-		
-	}
 	
 	public Client(String username, String password) {
 		this.username = username;
@@ -59,27 +57,92 @@ public abstract class Client {
 	}
 	
 
-	public void sendMessage(Message message, Queue queue) throws UnsupportedOperationException {
+	public int sendMessage(int priority, int receiver, int context, String content, int queue) {
+		
+		int status = -1;
+		
+		if (messageBroker == null) {
+			log.error("There is no broker connecting to server");
+		} else {
+			if (messageSenderBroker == null) {
+				messageSenderBroker = messageBroker.createMessageSender();
+			}
+			
+			Message msg = messageBroker.createMessage(priority, receiver, context, content);
+			
+			try {
+				status = messageSenderBroker.send(msg, queue);
+				if (status < 0) {
+					log.error("Send message failed with status " + status);
+				}
+			} catch (ServerConnectionException e) {
+				log.error("No connection to server", e);
+			} catch (InvalidAuthenticationException e) {
+				log.error("Client not authenticated", e);
+			} catch (WrongResponseException e) {
+				log.error("Received wrong response from server.", e);
+			} catch (SendMessageException e) {
+				log.error("Could not send command to server.", e);
+			}
+		}
+		
+		return status;
+	}
+	
+	public int sendMultipleQueueMessage(int priority, int receiver, int context, 
+			String content, List<Integer> queues) {
+		
+		int status = -1;
+		
+		if (messageBroker == null) {
+			log.error("There is no broker connecting to server");
+		} else {
+			if (messageSenderBroker == null) {
+				messageSenderBroker = messageBroker.createMessageSender();
+			}
+			
+			Message msg = messageBroker.createMessage(priority, receiver, context, content);
+			
+			try {
+				status = messageSenderBroker.send(msg, queues);
+				if (status < 0) {
+					log.error("Send message failed with status " + status);
+				}
+			} catch (ServerConnectionException e) {
+				log.error("No connection to server", e);
+			} catch (InvalidAuthenticationException e) {
+				log.error("Client not authenticated", e);
+			} catch (WrongResponseException e) {
+				log.error("Received wrong response from server.", e);
+			} catch (SendMessageException e) {
+				log.error("Could not send command to server.", e);
+			}
+		}
+		
+		return status;
+	}
+	
+	public Message retrievePriorityMessage(int queue) throws UnsupportedOperationException {
 		
 		throw new UnsupportedOperationException();
 	}
 	
-	public void sendMultipleQueueMessage(Message message, List<Queue> queue) throws UnsupportedOperationException {
+	public Message retrieveEarliestMessage(int queue) throws UnsupportedOperationException {
 		
 		throw new UnsupportedOperationException();
 	}
 	
-	public void retrieveMessage(Queue queue) throws UnsupportedOperationException {
+	public Message readPriorityMessage (int queue) throws UnsupportedOperationException {
 		
 		throw new UnsupportedOperationException();
 	}
 	
-	public void readMessage (Queue queue) throws UnsupportedOperationException {
+	public Message readEarliestMessage (int queue) throws UnsupportedOperationException {
 		
 		throw new UnsupportedOperationException();
 	}
 	
-	public void createQueue(String queueName) {	
+	public Queue createQueue(String queueName) {	
 		Queue queue = null;
 		try {
 			queue = messageBroker.createQueue(queueName);
@@ -97,6 +160,8 @@ public abstract class Client {
 		} else {
 			log.info("Queue " + queue.getName() + " was successfully created.");
 		}
+		
+		return queue;
 		
 	}
 	

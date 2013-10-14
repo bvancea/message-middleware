@@ -15,9 +15,7 @@ public class SendOnlyClientTest {
 		String username = "sandi";
 		String password = "cuta";
 		Client client = new SendOnlyClient(username, password);
-		Message message = new Message();
-		MessageBroker mb = new MessageBrokerImpl("bogdan", "bogdan", "localhost", 9000);
-		Queue queue = mb.findQueue("what");
-		client.sendMessage(message, queue);
+		Queue queue = client.findQueue("what");
+		client.sendMessage(10, -1, 1, "Hello. This is a message", queue.getId());
 	}
 }
