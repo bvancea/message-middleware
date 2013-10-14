@@ -49,7 +49,7 @@ public class MessageMapper extends AbstractMapper<Message> {
         message.setId(rs.getInt(1));
         message.setSender(rs.getInt(2));
         message.setReceiver(rs.getInt(3));
-        message.setQueue(rs.getInt(4));
+        message.setQueue(Arrays.asList((Integer) rs.getArray(4).getArray()));
         message.setPriority(rs.getInt(5));
         message.setContext(rs.getInt(6));
         message.setTimestamp(rs.getTimestamp(7));
