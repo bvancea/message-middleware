@@ -2,16 +2,16 @@ package ch.ethz.asl.client;
 
 import java.util.List;
 
+import ch.ethz.asl.exceptions.InvalidAuthenticationException;
+import ch.ethz.asl.exceptions.SendMessageException;
+import ch.ethz.asl.exceptions.ServerConnectionException;
+import ch.ethz.asl.exceptions.WrongResponseException;
 import ch.ethz.asl.message.MessageBroker;
 import ch.ethz.asl.message.MessageBrokerFactory;
 import ch.ethz.asl.message.domain.Message;
 import ch.ethz.asl.message.domain.Queue;
 import ch.ethz.asl.message.shared.log.Log;
 import ch.ethz.asl.message.shared.log.LogFactory;
-import exception.InvalidAuthenticationException;
-import exception.SendMessageException;
-import exception.ServerConnectionException;
-import exception.WrongResponseException;
 
 public abstract class Client {  
 	

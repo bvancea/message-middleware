@@ -1,12 +1,11 @@
 package ch.ethz.asl.message;
 
-import ch.ethz.asl.message.MessageSenderBroker;
+import ch.ethz.asl.exceptions.InvalidAuthenticationException;
+import ch.ethz.asl.exceptions.SendMessageException;
+import ch.ethz.asl.exceptions.ServerConnectionException;
+import ch.ethz.asl.exceptions.WrongResponseException;
 import ch.ethz.asl.message.domain.Message;
 import ch.ethz.asl.message.domain.Queue;
-import exception.InvalidAuthenticationException;
-import exception.SendMessageException;
-import exception.ServerConnectionException;
-import exception.WrongResponseException;
 
 
 public interface MessageBroker {

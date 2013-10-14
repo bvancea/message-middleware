@@ -1,9 +1,9 @@
 package ch.ethz.asl.message;
 
+import ch.ethz.asl.exceptions.SendMessageException;
+import ch.ethz.asl.exceptions.ServerConnectionException;
+import ch.ethz.asl.exceptions.WrongResponseException;
 import ch.ethz.asl.message.impl.MessageBrokerImpl;
-import exception.SendMessageException;
-import exception.ServerConnectionException;
-import exception.WrongResponseException;
 
 public class MessageBrokerFactory {
 

@@ -2,11 +2,11 @@ package ch.ethz.asl.message;
 
 import java.util.List;
 
+import ch.ethz.asl.exceptions.InvalidAuthenticationException;
+import ch.ethz.asl.exceptions.SendMessageException;
+import ch.ethz.asl.exceptions.ServerConnectionException;
+import ch.ethz.asl.exceptions.WrongResponseException;
 import ch.ethz.asl.message.domain.Message;
-import exception.InvalidAuthenticationException;
-import exception.SendMessageException;
-import exception.ServerConnectionException;
-import exception.WrongResponseException;
 
 public interface MessageReceiverBroker {
 

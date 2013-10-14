@@ -3,6 +3,10 @@ package ch.ethz.asl.message.impl;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import ch.ethz.asl.exceptions.InvalidAuthenticationException;
+import ch.ethz.asl.exceptions.SendMessageException;
+import ch.ethz.asl.exceptions.ServerConnectionException;
+import ch.ethz.asl.exceptions.WrongResponseException;
 import ch.ethz.asl.message.MessageReceiverBroker;
 import ch.ethz.asl.message.domain.Message;
 import ch.ethz.asl.message.shared.log.Log;
@@ -10,10 +14,6 @@ import ch.ethz.asl.message.shared.log.LogFactory;
 import ch.ethz.asl.util.CommandType;
 import ch.ethz.asl.util.Communicator;
 import ch.ethz.asl.util.MessageUtils;
-import exception.InvalidAuthenticationException;
-import exception.SendMessageException;
-import exception.ServerConnectionException;
-import exception.WrongResponseException;
 
 public class MessageReceiverBrokerImpl implements MessageReceiverBroker {
 	
