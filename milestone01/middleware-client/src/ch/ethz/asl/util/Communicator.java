@@ -23,7 +23,7 @@ public class Communicator {
         ByteBuffer receivingMessage = ByteBuffer.allocateDirect(1024);
         String returnMessage = null;
         
-        channel.write(sendMessage);
+        channel.write(sendMessage).get();
         Integer status = channel.read(receivingMessage).get();
         if (status > 0) {
         	returnMessage = Charset.defaultCharset().decode(receivingMessage).toString();
@@ -32,5 +32,4 @@ public class Communicator {
         return returnMessage;
 
     }
-	
 }
