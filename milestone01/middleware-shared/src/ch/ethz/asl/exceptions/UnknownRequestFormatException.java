@@ -1,4 +1,4 @@
-package exception;
+package ch.ethz.asl.exceptions;
 
 public class UnknownRequestFormatException extends Exception {
 

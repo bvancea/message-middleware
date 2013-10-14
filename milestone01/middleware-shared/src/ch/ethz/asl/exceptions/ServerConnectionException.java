@@ -1,33 +1,32 @@
-package exception;
+package ch.ethz.asl.exceptions;
 
-public class InvalidAuthenticationException extends Exception {
+public class ServerConnectionException extends Exception {
 
-	public InvalidAuthenticationException() {
+	public ServerConnectionException() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public InvalidAuthenticationException(String message, Throwable cause,
+	public ServerConnectionException(String message, Throwable cause,
 			boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 		// TODO Auto-generated constructor stub
 	}
 
-	public InvalidAuthenticationException(String message, Throwable cause) {
+	public ServerConnectionException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public InvalidAuthenticationException(String message) {
+	public ServerConnectionException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public InvalidAuthenticationException(Throwable cause) {
+	public ServerConnectionException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
+	
 }
