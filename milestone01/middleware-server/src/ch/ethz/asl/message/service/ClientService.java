@@ -1,6 +1,7 @@
-package ch.ethz.asl.message;
+package ch.ethz.asl.message.service;
 
 
+import ch.ethz.asl.message.Errors;
 import ch.ethz.asl.message.domain.Client;
 import ch.ethz.asl.message.persistence.ClientMapper;
 import ch.ethz.asl.message.persistence.MapperRegistry;
