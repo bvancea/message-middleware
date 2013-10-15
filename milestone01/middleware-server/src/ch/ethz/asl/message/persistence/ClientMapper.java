@@ -2,10 +2,7 @@ package ch.ethz.asl.message.persistence;
 
 import ch.ethz.asl.message.domain.Client;
 
-import java.sql.CallableStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.*;
 
 public class ClientMapper extends AbstractMapper<Client>{
@@ -42,10 +39,15 @@ public class ClientMapper extends AbstractMapper<Client>{
     }
 
     public Client findByUsernameAndPassword(String username, String password) throws SQLException {
-        CallableStatement statement = getDataSource().getConnection().prepareCall(FIND_CLIENT_USERNAME_PASSWORD);
+        final Connection connection  = getConnection();
+
+        CallableStatement statement = connection.prepareCall(FIND_CLIENT_USERNAME_PASSWORD);
         statement.setString(1, username);
         statement.setString(2, password);
-        return load(statement.executeQuery());
+        Client returnedValue = load(statement.executeQuery());
+        connection.close();
+
+        return returnedValue;
     }
 
     @Override

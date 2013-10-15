@@ -4,10 +4,7 @@ import ch.ethz.asl.message.domain.Message;
 import ch.ethz.asl.message.shared.log.Log;
 import ch.ethz.asl.message.shared.log.LogFactory;
 
-import java.sql.CallableStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -68,36 +65,36 @@ public class MessageMapper extends AbstractMapper<Message> {
         return load(statement.executeQuery());
     }
 
-    public Message retrieveEarliestMessage(int clientId, int queueId) {
+    public Message retrieveEarliestMessage(int clientId, int queueId) throws SQLException {
         String message = "Error retrieving earliest message for client " + clientId + " from queue " + queueId;
         return getMessageUsingProcedure(clientId, queueId, POP_EARLIEST, message);
     }
 
-    public Message getEarliestMessage(int clientId, int queueId) {
+    public Message getEarliestMessage(int clientId, int queueId) throws SQLException {
         String message = "Error reading earliest message for client " + clientId + " from queue " + queueId;
         return getMessageUsingProcedure(clientId, queueId, PEEK_EARLIEST, message);
     }
 
-    public Message retrieveMessage(int clientId, int queueId) {
+    public Message retrieveMessage(int clientId, int queueId) throws SQLException {
         String message = "Error retrieving highest priority message for client " + clientId + " from queue " + queueId;
         return getMessageUsingProcedure(clientId, queueId, POP_HIGHEST_PRIORITY, message);
     }
 
-    public Message getMessage(int clientId, int queueId) {
+    public Message getMessage(int clientId, int queueId) throws SQLException {
         String message = "Error reading highest priority message for client " + clientId + " from queue " + queueId;
         return getMessageUsingProcedure(clientId, queueId, PEEK_HIGHEST_PRIORITY, message);
     }
 
-    private Message getMessageUsingProcedure(int clientId, int queueId, String storedProcedure, String erorrMessage) {
+    private Message getMessageUsingProcedure(int clientId, int queueId, String storedProcedure, String erorrMessage) throws SQLException {
         Message message = null;
-        try {
-            CallableStatement statement = getDataSource().getConnection().prepareCall(storedProcedure);
-            statement.setLong(1, clientId);
-            statement.setLong(2, queueId);
-            message = load(statement.executeQuery());
-        } catch (SQLException e) {
-            LOG.error(erorrMessage, e);
-        }
+
+        final Connection connection = getConnection();
+        CallableStatement statement = connection.prepareCall(storedProcedure);
+        statement.setLong(1, clientId);
+        statement.setLong(2, queueId);
+        message = load(statement.executeQuery());
+
+        connection.close();
         return message;
     }
 

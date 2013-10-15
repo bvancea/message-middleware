@@ -2,12 +2,12 @@ package ch.ethz.asl.message.persistence;
 
 import ch.ethz.asl.message.domain.Queue;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.*;
 
 public class QueueMapper extends AbstractMapper<Queue>{
+
+    private static final String FIND_BY_NAME = "{call find_queue(?)}";
 
     @Override
     protected java.lang.String persistStatement() {
@@ -32,7 +32,6 @@ public class QueueMapper extends AbstractMapper<Queue>{
     @Override
     public Map<Object, Integer> toDatabaseParams(Queue entity) {
         HashMap<Object, Integer> map = new LinkedHashMap<>();
-        map.put(entity.getId(), Types.BIGINT);
         map.put(entity.getName(), Types.VARCHAR);
         map.put(entity.getCreator(), Types.BIGINT);
         return map;
@@ -45,6 +44,17 @@ public class QueueMapper extends AbstractMapper<Queue>{
         } else {
             return null;
         }
+    }
+
+    public Queue findByName(String name) throws SQLException {
+
+        final Connection connection = getConnection();
+        CallableStatement statement = connection.prepareCall(FIND_BY_NAME);
+        statement.setString(1, name);
+        Queue queue = load(statement.executeQuery());
+
+        connection.close();
+        return queue;
     }
 
 }

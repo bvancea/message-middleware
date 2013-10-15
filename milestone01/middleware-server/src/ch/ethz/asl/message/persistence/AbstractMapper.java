@@ -27,27 +27,43 @@ public abstract class AbstractMapper<T> {
     }
 
     public T persist(T entity) throws SQLException {
-        CallableStatement statement = getConnection().prepareCall(persistStatement());
+        final Connection connection  = getConnection();
+        CallableStatement statement = connection.prepareCall(persistStatement());
+
         Map<Object, Integer> parameterMap = toDatabaseParams(entity);
         addParameters(statement, parameterMap);
-        return load(statement.executeQuery());
+
+        T returnedValue = load(statement.executeQuery());
+        connection.close();
+        return returnedValue;
     }
 	
 	public T findOne(int id) throws SQLException {
+        final Connection connection  = getConnection();
+
         CallableStatement statement = getConnection().prepareCall(findStatement());
         statement.setLong(1, id);
-        return load(statement.executeQuery());
+        T returnedValue = load(statement.executeQuery());
+
+        connection.close();
+        return returnedValue;
     }
 	
 	public List<T> findAll() throws SQLException {
+        final Connection connection  = getConnection();
         CallableStatement statement = getConnection().prepareCall(findAllStatement());
-        return loadAll(statement.executeQuery());
+
+        List<T> returnedValue = loadAll(statement.executeQuery());
+        connection.close();
+        return returnedValue;
     }
 	
 	public void delete(int id) throws SQLException {
+        final Connection connection  = getConnection();
         CallableStatement statement = getConnection().prepareCall(deleteStatement());
         statement.setInt(1, id);
         statement.executeUpdate();
+        connection.close();
     }
 
     public List<T> loadAll(ResultSet rs) throws SQLException {
@@ -58,7 +74,7 @@ public abstract class AbstractMapper<T> {
         return rows;
     }
 
-    private Connection getConnection() throws SQLException {
+    protected Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 
