@@ -58,7 +58,7 @@ public interface MessageReceiverBroker {
 	
 	/**
 	 * Receive messages waiting for me in the specified queues.
-	 * @param queue
+	 * @param queues
 	 * @return
 	 * @throws ServerConnectionException 
 	 * @throws InvalidAuthenticationException 

@@ -25,6 +25,7 @@ public class Communicator {
         
         channel.write(sendMessage).get();
         Integer status = channel.read(receivingMessage).get();
+        receivingMessage.flip();
         if (status > 0) {
         	returnMessage = Charset.defaultCharset().decode(receivingMessage).toString();
         }      

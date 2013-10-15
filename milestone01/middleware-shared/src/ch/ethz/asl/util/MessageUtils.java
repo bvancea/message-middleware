@@ -1,5 +1,6 @@
 package ch.ethz.asl.util;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +10,9 @@ import java.util.Map;
 import ch.ethz.asl.exceptions.EmptyMessageException;
 import ch.ethz.asl.exceptions.UnknownRequestFormatException;
 import ch.ethz.asl.exceptions.WrongResponseException;
+import ch.ethz.asl.message.Errors;
 import ch.ethz.asl.message.domain.Message;
+import ch.ethz.asl.message.domain.Queue;
 
 public class MessageUtils {
 	
@@ -26,30 +29,58 @@ public class MessageUtils {
 	}
 	
 	public static Object decodeResponseMessage(int type, String message) throws WrongResponseException {
-		
-		switch(type) {
-		case CommandType.AUTHENTICATE: break;
-		case CommandType.CREATE_QUEUE: break;
-		case CommandType.DELETE_QUEUE: break;
-		case CommandType.FIND_QUEUE: break;
-		case CommandType.READ_MESSAGE_EARLIEST: 
-			
-			break;
-		case CommandType.READ_MESSAGE_PRIORITY: 
-			
-			break;
-		case CommandType.RECEIVE_MESSAGE_FOR_RECEIVER: break;
-		case CommandType.RETRIEVE_MESSAGE_EARLIEST: 
-			
-			break;
-		case CommandType.RETRIEVE_MESSAGE_PRIORITY: 
-			
-			break;
-		case CommandType.SEND_MESSAGE: break;
-		default: throw new WrongResponseException();
+        String[] tokens = message.split(",");
+        Object response = null;
+
+        //awesome programming
+        if (Errors.DATABASE_FAILURE == Integer.parseInt(tokens[1])) throw new RuntimeException("Database Error");
+
+        switch(type) {
+            case CommandType.AUTHENTICATE:
+                if (tokens.length < 2) throw new WrongResponseException();
+                response = Integer.parseInt(tokens[1]);
+                break;
+            case CommandType.CREATE_QUEUE:
+                if (tokens.length < 5 ) throw new WrongResponseException();
+                response = new Queue(Integer.parseInt(tokens[2]), tokens[3], Integer.parseInt(tokens[4]));
+                break;
+            case CommandType.DELETE_QUEUE:
+                if (tokens.length < 2) throw new WrongResponseException();
+                response = Integer.parseInt(tokens[1]);
+                break;
+            case CommandType.FIND_QUEUE:
+                if (tokens.length < 5 ) throw new WrongResponseException();
+                response = new Queue(Integer.parseInt(tokens[2]), tokens[3], Integer.parseInt(tokens[4]));
+                break;
+            case CommandType.READ_MESSAGE_EARLIEST:
+
+                response = new Message(
+                        Integer.parseInt(tokens[2]),    //sender
+                        Integer.parseInt(tokens[3]),    //receiver
+                        tokens[8],                      //content
+                        decodeList(tokens[6]),          //queues
+                        Integer.parseInt(tokens[4]),    //priority
+                        new Timestamp(Long.parseLong(tokens[7])), //timestamp
+                        Integer.parseInt(tokens[5])     //context
+                );
+                break;
+            case CommandType.READ_MESSAGE_PRIORITY:
+
+                break;
+            case CommandType.RECEIVE_MESSAGE_FOR_RECEIVER:
+
+                break;
+            case CommandType.RETRIEVE_MESSAGE_EARLIEST:
+
+                break;
+            case CommandType.RETRIEVE_MESSAGE_PRIORITY:
+
+                break;
+            case CommandType.SEND_MESSAGE: break;
+            default: throw new WrongResponseException();
 		}
 		
-		return null;
+		return response;
 	}
 	
 	public static Map<Integer, Object> decodeRequestMessage(String message) throws UnknownRequestFormatException, EmptyMessageException {
@@ -98,7 +129,7 @@ public class MessageUtils {
 					throw new UnknownRequestFormatException();
 				} else {
 					Integer queueId = Integer.parseInt(tokens[2]);		
-					returnMap.put(MapKey.QUEUE_NAME, queueId);
+					returnMap.put(MapKey.QUEUE_ID, queueId);
 					
 					return returnMap;
 				}
@@ -214,19 +245,29 @@ public class MessageUtils {
 		
 		return map;
 	}
-	
-	public static String encodeList(List<Integer> list) {
+
+	public static String encodeList(List<? extends Object> list) {
 		String ret = "[";
 		for(int i = 0; i < list.size(); i++) {
 			if (i>0) {
 				ret += " ";
 			}
-			ret += Integer.toString(list.get(i));
+			ret += list.get(i).toString();
 		}
 		
 		ret += "]";
 		
 		return ret;
 	}
+
+    public static List<Long> decodeList(String listString) {
+        listString = listString.substring(1, listString.length() - 1);
+        String[] objectArr = listString.split(" ");
+        List<Long> objectList = new ArrayList<>();
+        for(String q : objectArr) {
+            objectList.add(Long.parseLong(q));
+        }
+        return objectList;
+    }
 
 }

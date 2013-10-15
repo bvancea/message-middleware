@@ -97,6 +97,7 @@ public class XEventDispatcher implements Runnable {
     }
 
     private void acceptAndHandleConnection(final SelectionKey event) throws IOException {
+        LOG.info("Accepted connection from client " + event.channel());
         final SocketChannel clientSocketChannel = acceptConnection(event);
         clientSocketChannel.configureBlocking(false);
         dispatchConnection(clientSocketChannel);

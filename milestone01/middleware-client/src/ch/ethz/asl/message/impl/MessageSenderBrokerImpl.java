@@ -99,7 +99,6 @@ public class MessageSenderBrokerImpl implements MessageSenderBroker {
 	/*
 	 * Getters and setters
 	 */
-	
 	public String getUsername() {
 		return username;
 	}

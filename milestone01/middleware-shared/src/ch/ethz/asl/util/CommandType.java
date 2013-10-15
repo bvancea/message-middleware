@@ -14,12 +14,12 @@ public class CommandType {
 	/**
 	 * create a new queue
 	 */
-	public final static int CREATE_QUEUE = 2; 	
-	
+	public static final int CREATE_QUEUE = 2;
+
 	/**
 	 * authenticate client
 	 */
-	public final static int AUTHENTICATE = 3; 	
+	public static final int AUTHENTICATE = 3;
 	
 	/**
 	 * delete a specific queue
