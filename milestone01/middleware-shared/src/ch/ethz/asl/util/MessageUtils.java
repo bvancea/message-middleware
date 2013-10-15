@@ -178,9 +178,9 @@ public class MessageUtils {
 					String content = tokens[7];
 					
 					String[] queues = queueList.split(" ");
-					List<Integer> qList = new ArrayList<Integer>();
+					List<Long> qList = new ArrayList<Long>();
 					for(String q : queues) {
-						qList.add(Integer.parseInt(q));
+						qList.add(Long.parseLong(q));
 					}
 					
 					Message m = new Message();

@@ -9,12 +9,24 @@ public class Message {
 	private int sender;
 	private int receiver;
 	private java.lang.String content;
-	private List<Integer> queue;
+	private List<Long> queue;
 	private int priority;
 	private Timestamp timestamp;
 	private int context;
-	
-	public int getId() {
+
+    public Message() { }
+
+    public Message(int sender, int receiver, String content, List<Long> queue, int priority, Timestamp timestamp, int context) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.content = content;
+        this.queue = queue;
+        this.priority = priority;
+        this.timestamp = timestamp;
+        this.context = context;
+    }
+
+    public int getId() {
 		return id;
 	}
 	public void setId(int id) {
@@ -56,12 +68,42 @@ public class Message {
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
-	public List<Integer> getQueue() {
+	public List<Long> getQueue() {
 		return queue;
 	}
-	public void setQueue(List<Integer> queue) {
+	public void setQueue(List<Long> queue) {
 		this.queue = queue;
 	}
-	
-	
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Message message = (Message) o;
+
+        if (context != message.context) return false;
+        if (id != message.id) return false;
+        if (priority != message.priority) return false;
+        if (receiver != message.receiver) return false;
+        if (sender != message.sender) return false;
+        if (content != null ? !content.equals(message.content) : message.content != null) return false;
+        if (queue != null ? !queue.equals(message.queue) : message.queue != null) return false;
+        if (timestamp != null ? !timestamp.equals(message.timestamp) : message.timestamp != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + sender;
+        result = 31 * result + receiver;
+        result = 31 * result + (content != null ? content.hashCode() : 0);
+        result = 31 * result + (queue != null ? queue.hashCode() : 0);
+        result = 31 * result + priority;
+        result = 31 * result + (timestamp != null ? timestamp.hashCode() : 0);
+        result = 31 * result + context;
+        return result;
+    }
 }

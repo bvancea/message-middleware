@@ -4,8 +4,8 @@ import ch.ethz.asl.message.domain.Queue;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.Types;
+import java.util.*;
 
 public class QueueMapper extends AbstractMapper<Queue>{
 
@@ -26,17 +26,25 @@ public class QueueMapper extends AbstractMapper<Queue>{
 
     @Override
     protected java.lang.String deleteStatement() {
-        return "{call delete_queue(?)";
+        return "{call delete_queue(?)}";
     }
 
     @Override
-    public List<Object> toDatabaseParams(Queue entity) {
-        return Arrays.asList( (Object) entity.getId(), entity.getName(), entity.getCreator() );
+    public Map<Object, Integer> toDatabaseParams(Queue entity) {
+        HashMap<Object, Integer> map = new LinkedHashMap<>();
+        map.put(entity.getId(), Types.BIGINT);
+        map.put(entity.getName(), Types.VARCHAR);
+        map.put(entity.getCreator(), Types.BIGINT);
+        return map;
     }
 
     @Override
     public Queue load(ResultSet rs) throws SQLException {
-        return new Queue(rs.getInt(1), rs.getString(2), rs.getInt(3));
+        if (rs.next() && !rs.isBeforeFirst()) {
+            return new Queue(rs.getInt(1), rs.getString(2), rs.getInt(3));
+        } else {
+            return null;
+        }
     }
 
 }

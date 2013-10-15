@@ -1,8 +1,5 @@
 package ch.ethz.asl.message.persistence;
 
-import ch.ethz.asl.message.domain.Client;
-
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.CallableStatement;
@@ -11,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractMapper<T> {
 
@@ -21,7 +19,7 @@ public abstract class AbstractMapper<T> {
     protected abstract String findAllStatement();
     protected abstract String deleteStatement();
 
-    public abstract List<Object> toDatabaseParams(T entity);
+    public abstract Map<Object, Integer> toDatabaseParams(T entity) throws SQLException;
     public abstract T load(ResultSet rs) throws SQLException;
 
     public AbstractMapper() {
@@ -30,7 +28,7 @@ public abstract class AbstractMapper<T> {
 
     public T persist(T entity) throws SQLException {
         CallableStatement statement = getConnection().prepareCall(persistStatement());
-        List<Object> parameterMap = toDatabaseParams(entity);
+        Map<Object, Integer> parameterMap = toDatabaseParams(entity);
         addParameters(statement, parameterMap);
         return load(statement.executeQuery());
     }
@@ -48,6 +46,7 @@ public abstract class AbstractMapper<T> {
 	
 	public void delete(int id) throws SQLException {
         CallableStatement statement = getConnection().prepareCall(deleteStatement());
+        statement.setInt(1, id);
         statement.executeUpdate();
     }
 
@@ -71,10 +70,10 @@ public abstract class AbstractMapper<T> {
         }
     }
 
-    private CallableStatement addParameters(CallableStatement statement, List<Object> params) throws SQLException {
+    private CallableStatement addParameters(CallableStatement statement, Map<Object, Integer> params) throws SQLException {
         int index = 1;
-        for (Object entry : params) {
-            statement.setObject(index++, entry);
+        for (Map.Entry<Object, Integer> entry : params.entrySet()) {
+            statement.setObject(index++, entry.getKey(), entry.getValue());
         }
         return statement;
     }

@@ -5,6 +5,7 @@ import ch.ethz.asl.message.domain.Client;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.*;
 
 public class ClientMapper extends AbstractMapper<Client>{
@@ -28,12 +29,16 @@ public class ClientMapper extends AbstractMapper<Client>{
 
     @Override
     protected String deleteStatement() {
-        return "{call delete_client(?)";
+        return "{call delete_client(?)}";
     }
 
     @Override
-    public List<Object> toDatabaseParams(Client entity) {
-        return Arrays.asList((Object) entity.getName(), entity.getUsername(), entity.getPassword());
+    public Map<Object, Integer> toDatabaseParams(Client entity) {
+        Map<Object, Integer> map = new LinkedHashMap<>();
+        map.put(entity.getName(), Types.VARCHAR);
+        map.put(entity.getUsername(), Types.VARCHAR);
+        map.put(entity.getPassword(), Types.VARCHAR);
+        return map;
     }
 
     public Client findByUsernameAndPassword(String username, String password) throws SQLException {
@@ -45,8 +50,7 @@ public class ClientMapper extends AbstractMapper<Client>{
 
     @Override
     public Client load(ResultSet rs) throws SQLException {
-        rs.next();
-        if (!rs.isBeforeFirst()) {
+        if ( rs.next() && !rs.isBeforeFirst()) {
             Client client = new Client();
             client.setId(rs.getInt(1));
             client.setName(rs.getString(2));
