@@ -31,7 +31,7 @@ public class MessageMapperTest {
     @Test
     public void addMessageTest() throws SQLException {
 
-        Message message = new Message(TEST_SENDER_ID, TEST_RECEIVER_ID, TEST_CONTENT, TEST_QUEUE_IDS, TEST_PRIORITY, TEST_TIMESTAMP, TEST_CONTEXT);
+        Message message = new Message(TEST_SENDER_ID, TEST_RECEIVER_ID, TEST_PRIORITY, TEST_CONTEXT, TEST_QUEUE_IDS, TEST_TIMESTAMP, TEST_CONTENT);
         Message returned = messageMapper.persist(message);
         message.setId(returned.getId());
         Assert.assertEquals(message, returned);
@@ -42,7 +42,7 @@ public class MessageMapperTest {
 
     @Test
     public void testDeleteMessage() throws SQLException {
-        Message message = new Message(TEST_SENDER_ID, TEST_RECEIVER_ID, TEST_CONTENT, TEST_QUEUE_IDS, TEST_PRIORITY, TEST_TIMESTAMP, TEST_CONTEXT);
+        Message message = new Message(TEST_SENDER_ID, TEST_RECEIVER_ID, TEST_PRIORITY, TEST_CONTEXT, TEST_QUEUE_IDS, TEST_TIMESTAMP, TEST_CONTENT);
         Message returned = messageMapper.persist(message);
 
         int returnedId = returned.getId();

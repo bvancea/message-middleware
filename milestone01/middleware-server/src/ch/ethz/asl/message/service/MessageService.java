@@ -24,7 +24,7 @@ public class MessageService {
     private MessageMapper mapper = (MessageMapper) MapperRegistry.lookup(Message.class);
 
     public ByteBuffer addMessage(Map<Integer, Object> parameters) {
-        int connectionId = Integer.parseInt((String) parameters.get(MapKey.CONNECTION_ID));
+        int connectionId = (Integer) parameters.get(MapKey.CONNECTION_ID);
         String[] responseArray;
 
         Message message = (Message) parameters.get(MapKey.MESSAGE);
@@ -41,7 +41,7 @@ public class MessageService {
     }
 
     public ByteBuffer receiveMessageForClient(Map<Integer, Object> parameters) {
-        int connectionId = Integer.parseInt((String) parameters.get(MapKey.CONNECTION_ID));
+        int connectionId = (Integer) parameters.get(MapKey.CONNECTION_ID);
 
         //ToDo add stored procedure
         String[] responseArray = new String[0];
@@ -52,10 +52,10 @@ public class MessageService {
     }
 
     public ByteBuffer readPriority(Map<Integer, Object> parameters) {
-        int connectionId = Integer.parseInt((String) parameters.get(MapKey.CONNECTION_ID));
+        int connectionId = (Integer) parameters.get(MapKey.CONNECTION_ID);
         String[] responseArray;
 
-        int queueId = Integer.parseInt(String.valueOf(parameters.get(MapKey.QUEUE_ID)));
+        int queueId = (Integer) parameters.get(MapKey.QUEUE_ID);
         try {
             Message message = mapper.getMessage(connectionId, queueId);
             responseArray = messageToStringArray(message);
@@ -69,10 +69,10 @@ public class MessageService {
     }
 
     public ByteBuffer readEarliest(Map<Integer, Object> parameters) {
-        int connectionId = Integer.parseInt((String) parameters.get(MapKey.CONNECTION_ID));
+        int connectionId = (Integer) parameters.get(MapKey.CONNECTION_ID);
         String[] responseArray;
 
-        int queueId = Integer.parseInt(String.valueOf(parameters.get(MapKey.QUEUE_ID)));
+        int queueId = (Integer) parameters.get(MapKey.QUEUE_ID);
         try {
             Message message = mapper.getEarliestMessage(connectionId, queueId);
             responseArray = messageToStringArray(message);
@@ -86,10 +86,10 @@ public class MessageService {
     }
 
     public ByteBuffer retrievePriority(Map<Integer, Object> parameters) {
-        int connectionId = Integer.parseInt((String) parameters.get(MapKey.CONNECTION_ID));
+        int connectionId = (Integer) parameters.get(MapKey.CONNECTION_ID);
         String[] responseArray;
 
-        int queueId = Integer.parseInt(String.valueOf(parameters.get(MapKey.QUEUE_ID)));
+        int queueId = (Integer) parameters.get(MapKey.QUEUE_ID);
         try {
             Message message = mapper.retrieveMessage(connectionId, queueId);
             responseArray = messageToStringArray(message);
@@ -103,10 +103,10 @@ public class MessageService {
     }
 
     public ByteBuffer retrieveEarliest(Map<Integer, Object> parameters) {
-        int connectionId = Integer.parseInt((String) parameters.get(MapKey.CONNECTION_ID));
+        int connectionId = (Integer) parameters.get(MapKey.CONNECTION_ID);
         String[] responseArray;
 
-        int queueId = Integer.parseInt(String.valueOf(parameters.get(MapKey.QUEUE_ID)));
+        int queueId = (Integer) parameters.get(MapKey.QUEUE_ID);
         try {
             Message message = mapper.retrieveEarliestMessage(connectionId, queueId);
             responseArray = messageToStringArray(message);
@@ -120,14 +120,18 @@ public class MessageService {
     }
 
     private String[] messageToStringArray(Message message) {
-        return new String[] {String.valueOf(message.getId()),
-                String.valueOf(message.getSender()),
-                String.valueOf(message.getReceiver()),
-                String.valueOf(message.getPriority()),
-                String.valueOf(message.getContext()),
-                MessageUtils.encodeList(message.getQueue()),
-                String.valueOf(message.getTimestamp().getTime()),
-                message.getContent()};
+        if (message != null) {
+            return new String[] {String.valueOf(message.getId()),
+                    String.valueOf(message.getSender()),
+                    String.valueOf(message.getReceiver()),
+                    String.valueOf(message.getPriority()),
+                    String.valueOf(message.getContext()),
+                    MessageUtils.encodeList(message.getQueue()),
+                    String.valueOf(message.getTimestamp().getTime()),
+                    message.getContent()};
+        } else {
+            return new String[0];
+        }
     }
 
 }

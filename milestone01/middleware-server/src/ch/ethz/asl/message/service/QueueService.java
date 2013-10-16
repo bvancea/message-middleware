@@ -27,16 +27,13 @@ public class QueueService {
 
         String name = (String) params.get(MapKey.QUEUE_NAME);
         int connectionId = (Integer) params.get(MapKey.CONNECTION_ID);
-
         String[] responseArray;
 
         try {
             Queue queue = new Queue(name,connectionId);
             queue = mapper.persist(queue);
-            responseArray = new String[] {String.valueOf(queue.getId()), queue.getName(), String.valueOf(queue.getCreator())};
-
+            responseArray = queueToResponseArray(queue);
         } catch (SQLException e) {
-
             LOG.error("Error persisting queue",e);
             responseArray = new String[] {String.valueOf(Errors.DATABASE_FAILURE)};
         }
@@ -48,7 +45,6 @@ public class QueueService {
     public ByteBuffer deleteQueue(Map<Integer, Object> params) {
         int connectionId = (Integer) params.get(MapKey.CONNECTION_ID);
         String[] responseArray;
-
         int queueId =(Integer) params.get(MapKey.QUEUE_ID);
 
         try {
@@ -70,7 +66,7 @@ public class QueueService {
 
         try {
             Queue queue = mapper.findByName(name);
-            responseArray = new String[] {String.valueOf(queue.getId()), queue.getName(), String.valueOf(queue.getId())};
+            responseArray = queueToResponseArray(queue);
         } catch (SQLException e) {
             LOG.error("Error retrieving queue.",e);
             responseArray = new String[] {String.valueOf(Errors.DATABASE_FAILURE)};
@@ -78,5 +74,13 @@ public class QueueService {
 
         String responseString = MessageUtils.encodeMessage(CommandType.FIND_QUEUE, responseArray, connectionId);
         return ByteBuffer.wrap(responseString.getBytes());
+    }
+
+    private String[] queueToResponseArray(Queue queue) {
+        if (queue != null) {
+            return new String[] {String.valueOf(queue.getId()), queue.getName(), String.valueOf(queue.getId())};
+        } else {
+            return new String[0];
+        }
     }
 }

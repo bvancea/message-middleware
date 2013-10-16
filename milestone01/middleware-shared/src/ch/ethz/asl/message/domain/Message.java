@@ -8,22 +8,23 @@ public class Message {
 	private int id;
 	private int sender;
 	private int receiver;
-	private java.lang.String content;
-	private List<Long> queue;
 	private int priority;
-	private Timestamp timestamp;
 	private int context;
+    private List<Long> queue;
+    private Timestamp timestamp;
+    private java.lang.String content;
+
 
     public Message() { }
 
-    public Message(int sender, int receiver, String content, List<Long> queue, int priority, Timestamp timestamp, int context) {
+    public Message(int sender, int receiver, int priority, int context, List<Long> queue, Timestamp timestamp, String content) {
         this.sender = sender;
         this.receiver = receiver;
-        this.content = content;
-        this.queue = queue;
         this.priority = priority;
-        this.timestamp = timestamp;
         this.context = context;
+        this.queue = queue;
+        this.timestamp = timestamp;
+        this.content = content;
     }
 
     public int getId() {

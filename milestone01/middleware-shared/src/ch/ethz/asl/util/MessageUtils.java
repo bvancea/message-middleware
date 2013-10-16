@@ -1,18 +1,16 @@
 package ch.ethz.asl.util;
 
-import java.sql.Date;
+import ch.ethz.asl.exceptions.EmptyMessageException;
+import ch.ethz.asl.exceptions.UnknownRequestFormatException;
+import ch.ethz.asl.exceptions.WrongResponseException;
+import ch.ethz.asl.message.domain.Message;
+import ch.ethz.asl.message.domain.Queue;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import ch.ethz.asl.exceptions.EmptyMessageException;
-import ch.ethz.asl.exceptions.UnknownRequestFormatException;
-import ch.ethz.asl.exceptions.WrongResponseException;
-import ch.ethz.asl.message.Errors;
-import ch.ethz.asl.message.domain.Message;
-import ch.ethz.asl.message.domain.Queue;
 
 public class MessageUtils {
 	
@@ -32,8 +30,9 @@ public class MessageUtils {
         String[] tokens = message.split(",");
         Object response = null;
 
-        //awesome programming
-        if (Errors.DATABASE_FAILURE == Integer.parseInt(tokens[1])) throw new RuntimeException("Database Error");
+        //tokens: commandId, connectionId, <other parameters>
+               //awesome programming
+        //if (Errors.DATABASE_FAILURE == Integer.parseInt(tokens[1])) throw new RuntimeException("Database Error");
 
         switch(type) {
             case CommandType.AUTHENTICATE:
@@ -41,7 +40,9 @@ public class MessageUtils {
                 response = Integer.parseInt(tokens[1]);
                 break;
             case CommandType.CREATE_QUEUE:
-                if (tokens.length < 5 ) throw new WrongResponseException();
+                if (isNullEntity(tokens, type)) {
+                    return null;
+                }
                 response = new Queue(Integer.parseInt(tokens[2]), tokens[3], Integer.parseInt(tokens[4]));
                 break;
             case CommandType.DELETE_QUEUE:
@@ -49,35 +50,37 @@ public class MessageUtils {
                 response = Integer.parseInt(tokens[1]);
                 break;
             case CommandType.FIND_QUEUE:
-                if (tokens.length < 5 ) throw new WrongResponseException();
+                if (isNullEntity(tokens, type)) {
+                    return null;
+                }
                 response = new Queue(Integer.parseInt(tokens[2]), tokens[3], Integer.parseInt(tokens[4]));
                 break;
             case CommandType.READ_MESSAGE_EARLIEST:
-
+            case CommandType.READ_MESSAGE_PRIORITY:
+            case CommandType.RECEIVE_MESSAGE_FOR_RECEIVER:
+            case CommandType.RETRIEVE_MESSAGE_EARLIEST:
+            case CommandType.RETRIEVE_MESSAGE_PRIORITY:
+                if (isNullEntity(tokens, type)) {
+                    return null;
+                }
+                if (tokens.length < 10) throw new WrongResponseException();
                 response = new Message(
-                        Integer.parseInt(tokens[2]),    //sender
-                        Integer.parseInt(tokens[3]),    //receiver
-                        tokens[8],                      //content
-                        decodeList(tokens[6]),          //queues
-                        Integer.parseInt(tokens[4]),    //priority
-                        new Timestamp(Long.parseLong(tokens[7])), //timestamp
-                        Integer.parseInt(tokens[5])     //context
+                        Integer.parseInt(tokens[3]),    //sender
+                        Integer.parseInt(tokens[4]),    //receiver
+                        Integer.parseInt(tokens[5]),    //priority
+                        Integer.parseInt(tokens[6]),     //context
+                        decodeList(tokens[7]),          //queues
+                        new Timestamp(Long.parseLong(tokens[8])), //timestamp
+                        tokens[9]                      //content
+
                 );
                 break;
-            case CommandType.READ_MESSAGE_PRIORITY:
-
+            case CommandType.SEND_MESSAGE:
+                if (tokens.length < 2) throw new WrongResponseException();
+                response = Integer.parseInt(tokens[1]);
                 break;
-            case CommandType.RECEIVE_MESSAGE_FOR_RECEIVER:
-
-                break;
-            case CommandType.RETRIEVE_MESSAGE_EARLIEST:
-
-                break;
-            case CommandType.RETRIEVE_MESSAGE_PRIORITY:
-
-                break;
-            case CommandType.SEND_MESSAGE: break;
-            default: throw new WrongResponseException();
+            default:
+                throw new WrongResponseException();
 		}
 		
 		return response;
@@ -268,6 +271,15 @@ public class MessageUtils {
             objectList.add(Long.parseLong(q));
         }
         return objectList;
+    }
+
+    private static boolean isNullEntity(String[] tokens, int commandId) {
+        //Todo check connectionId as well
+        if (tokens.length == 2 && Integer.parseInt(tokens[0]) == commandId) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
