@@ -38,12 +38,8 @@ public class QueueMapper extends AbstractMapper<Queue>{
     }
 
     @Override
-    public Queue load(ResultSet rs) throws SQLException {
-        if (rs.next() && !rs.isBeforeFirst()) {
-            return new Queue(rs.getInt(1), rs.getString(2), rs.getInt(3));
-        } else {
-            return null;
-        }
+    public Queue loadOne(ResultSet rs) throws SQLException {
+        return new Queue(rs.getInt(1), rs.getString(2), rs.getInt(3));
     }
 
     public Queue findByName(String name) throws SQLException {

@@ -51,16 +51,12 @@ public class ClientMapper extends AbstractMapper<Client>{
     }
 
     @Override
-    public Client load(ResultSet rs) throws SQLException {
-        if ( rs.next() && !rs.isBeforeFirst()) {
-            Client client = new Client();
-            client.setId(rs.getInt(1));
-            client.setName(rs.getString(2));
-            client.setUsername(rs.getString(3));
-            client.setPassword(rs.getString(4));
-            return client;
-        } else {
-            return null;
-        }
+    public Client loadOne(ResultSet rs) throws SQLException {
+        Client client = new Client();
+        client.setId(rs.getInt(1));
+        client.setName(rs.getString(2));
+        client.setUsername(rs.getString(3));
+        client.setPassword(rs.getString(4));
+        return client;
     }
 }

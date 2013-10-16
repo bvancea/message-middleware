@@ -7,6 +7,7 @@ import ch.ethz.asl.message.shared.log.LogFactory;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MessageMapper extends AbstractMapper<Message> {
@@ -17,6 +18,8 @@ public class MessageMapper extends AbstractMapper<Message> {
     private static final String PEEK_HIGHEST_PRIORITY = "{call get_message(?,?)}";
     private static final String POP_EARLIEST = "{call retrieve_earliest_message(?,?)}";
     private static final String PEEK_EARLIEST = "{call get_earliest_message(?,?)}";
+    private static final String POP_MESSAGES_OF_CLIENT_IN_QUEUES = "{call retrieve_messages_of_client_in_queues(?,?)}";
+    private static final String PEEK_MESSAGES_IN_QUEUE = "{call find_messages_from_queue(?)}";
 
     @Override
     protected java.lang.String persistStatement() {
@@ -98,22 +101,28 @@ public class MessageMapper extends AbstractMapper<Message> {
         return message;
     }
 
-    @Override
-    public Message load(ResultSet rs) throws SQLException {
-        if (rs.next() && !rs.isBeforeFirst()) {
-            Message message = new Message();
-            message.setId(rs.getInt(1));
-            message.setSender(rs.getInt(2));
-            message.setReceiver(rs.getInt(3));
-            message.setQueue(Arrays.asList((Long[]) rs.getArray(4).getArray()));
-            message.setPriority(rs.getInt(5));
-            message.setContext(rs.getInt(8));
-            message.setTimestamp(rs.getTimestamp(6));
-            message.setContent(rs.getString(7));
-            return message;
-        } else {
-            return null;
-        }
+    public List<Message> getMessagesFromQueue(int queueId) throws SQLException {
+        final Connection connection = getConnection();
+        CallableStatement statement = connection.prepareCall(PEEK_MESSAGES_IN_QUEUE);
+        statement.setInt(1,queueId);
+
+        List<Message> returnedList = loadAll(statement.executeQuery());
+        connection.close();
+        return returnedList;
     }
 
+
+    @Override
+    public Message loadOne(ResultSet rs) throws SQLException {
+        Message message = new Message();
+        message.setId(rs.getInt(1));
+        message.setSender(rs.getInt(2));
+        message.setReceiver(rs.getInt(3));
+        message.setQueue(Arrays.asList((Long[]) rs.getArray(4).getArray()));
+        message.setPriority(rs.getInt(5));
+        message.setContext(rs.getInt(8));
+        message.setTimestamp(rs.getTimestamp(6));
+        message.setContent(rs.getString(7));
+        return message;
+    }
 }

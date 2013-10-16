@@ -20,7 +20,8 @@ public abstract class AbstractMapper<T> {
     protected abstract String deleteStatement();
 
     public abstract Map<Object, Integer> toDatabaseParams(T entity) throws SQLException;
-    public abstract T load(ResultSet rs) throws SQLException;
+
+    public abstract T loadOne(ResultSet rs) throws SQLException;
 
     public AbstractMapper() {
         dataSource = retrieveDataSource();
@@ -66,10 +67,18 @@ public abstract class AbstractMapper<T> {
         connection.close();
     }
 
+    public T load(ResultSet rs) throws SQLException {
+        if (rs.next()) {
+            return loadOne(rs);
+        } else {
+            return null;
+        }
+    }
+
     public List<T> loadAll(ResultSet rs) throws SQLException {
         List<T> rows = new ArrayList<>();
         while (rs.next()) {
-            rows.add(load(rs));
+            rows.add(loadOne(rs));
         }
         return rows;
     }
@@ -97,7 +106,5 @@ public abstract class AbstractMapper<T> {
     protected DataSource getDataSource() {
         return dataSource;
     }
-
-
 
 }

@@ -51,6 +51,13 @@ public class MessageMapperTest {
         Assert.assertEquals(null, message);
     }
 
+    @Test
+    public void testMessagesFromQueue() throws SQLException {
+        List<Message> messages = messageMapper.getMessagesFromQueue(1);
+        System.out.println(messages);
+        Assert.assertNotNull(messages);
+    }
+
     private void deleteMessage(int id) throws SQLException {
         messageMapper.delete(id);
     }
