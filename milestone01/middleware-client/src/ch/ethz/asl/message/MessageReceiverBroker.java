@@ -67,4 +67,15 @@ public interface MessageReceiverBroker {
 			throws ServerConnectionException, InvalidAuthenticationException,
 			WrongResponseException, SendMessageException;
 	
+	/**
+	 * Receive messages waiting for me in the specified queues.
+	 * @param queues
+	 * @return
+	 * @throws ServerConnectionException 
+	 * @throws InvalidAuthenticationException 
+	 */
+	public List<Message> readFromSender(int senderId) 
+			throws ServerConnectionException, InvalidAuthenticationException,
+			WrongResponseException, SendMessageException;
+	
 }

@@ -142,6 +142,18 @@ public abstract class Client {
 		throw new UnsupportedOperationException();
 	}
 	
+	public List<Message> retrieveMyMessages (List<Integer> queues) throws UnsupportedOperationException {
+		
+		throw new UnsupportedOperationException();
+	}
+	
+	public List<Message> readFromSender (int senderId) throws UnsupportedOperationException {
+		
+		throw new UnsupportedOperationException();
+	}
+	
+	
+	
 	public Queue createQueue(String queueName) {	
 		Queue queue = null;
 		try {

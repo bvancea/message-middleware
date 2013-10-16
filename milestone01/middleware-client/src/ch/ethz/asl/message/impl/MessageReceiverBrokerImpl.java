@@ -157,6 +157,33 @@ public class MessageReceiverBrokerImpl implements MessageReceiverBroker {
 			
 		}
 	}
+	
+	
+	@Override
+	public List<Message> readFromSender(int senderId)
+			throws ServerConnectionException, InvalidAuthenticationException,
+			WrongResponseException, SendMessageException {
+		
+		if (communicator == null) {
+			throw new ServerConnectionException();
+		} else if (connectionID == -1) {
+			throw new InvalidAuthenticationException();
+		} else {
+			String[] params = new String[1];
+			params[0] = Integer.toString(senderId);
+			String sendCommand = MessageUtils.encodeMessage(CommandType.READ_FROM_SENDER, 
+					params, connectionID);
+			try {
+				String receivedMessage = communicator.sendMessage(sendCommand);
+				List<Message> messages = (List<Message>) MessageUtils.decodeResponseMessage(CommandType.RECEIVE_MESSAGE_FOR_RECEIVER, receivedMessage);
+				return messages;
+			} catch (ExecutionException | InterruptedException e) {
+				log.error("Could not send retrieve message command.", e);
+				throw new SendMessageException();
+			}
+			
+		}
+	}
 
 	
 	/*
@@ -194,8 +221,4 @@ public class MessageReceiverBrokerImpl implements MessageReceiverBroker {
 	public void setConnectionID(int connectionID) {
 		this.connectionID = connectionID;
 	}
-
-	
-	
-
 }

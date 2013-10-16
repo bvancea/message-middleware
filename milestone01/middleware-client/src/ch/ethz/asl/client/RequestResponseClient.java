@@ -1,5 +1,7 @@
 package ch.ethz.asl.client;
 
+import java.util.List;
+
 import ch.ethz.asl.exceptions.InvalidAuthenticationException;
 import ch.ethz.asl.exceptions.SendMessageException;
 import ch.ethz.asl.exceptions.ServerConnectionException;
@@ -135,6 +137,41 @@ public class RequestResponseClient extends Client {
 		}
 		
 		return message;
+	}
+	
+	@Override
+	public List<Message> retrieveMyMessages (List<Integer> queues) throws UnsupportedOperationException {
+		
+		List<Message> messages = null;
+		
+		if (messageBroker == null) {
+			log.error("There is no broker connecting to server");
+		} else {
+			if (messageReceiverBroker == null) {
+				messageReceiverBroker = messageBroker.createMessageReceiver();
+			}
+			
+			try {
+				messages = messageReceiverBroker.receiveForMe(queues);
+				
+			} catch (ServerConnectionException e) {
+				log.error("No connection to server", e);
+			} catch (InvalidAuthenticationException e) {
+				log.error("Client not authenticated", e);
+			} catch (WrongResponseException e) {
+				log.error("Received wrong response from server.", e);
+			} catch (SendMessageException e) {
+				log.error("Could not send command to server.", e);
+			}
+		}
+		
+		return messages;
+	}
+	
+	@Override
+	public List<Message> readFromSender (int senderId) throws UnsupportedOperationException {
+		
+		throw new UnsupportedOperationException();
 	}
 
 }
