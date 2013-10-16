@@ -232,6 +232,15 @@ public class MessageUtils {
 					
 					return returnMap;
 				}
+			case CommandType.READ_FROM_SENDER:
+				if (tokens.length < 3) {
+					throw new UnknownRequestFormatException();
+				} else {
+					Integer senderId = Integer.parseInt(tokens[2]);		
+					returnMap.put(MapKey.SENDER_ID, senderId);
+					
+					return returnMap;
+				}
 			default: throw new UnknownRequestFormatException();
 			}
 		} catch (NumberFormatException e) {

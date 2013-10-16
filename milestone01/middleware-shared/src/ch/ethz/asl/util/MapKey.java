@@ -10,6 +10,7 @@ public class MapKey {
 	public static final int QUEUE_ID_LIST = 5;
 	public static final int MESSAGE = 6;
 	public static final int QUEUE_ID = 7;
+	public static final int SENDER_ID = 8;
 	
 
 }

@@ -51,4 +51,9 @@ public class CommandType {
 	 */
 	public final static int RETRIEVE_MESSAGE_PRIORITY = 9; 
 	
+	/**
+	 * query for all messages from a particular sender (without deleting them)
+	 */
+	public final static int READ_FROM_SENDER = 10;
+	
 }
