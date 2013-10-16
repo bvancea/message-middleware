@@ -16,12 +16,12 @@ public class ClientMapper extends AbstractMapper<Client>{
 
     @Override
     protected String findStatement() {
-        return "{call find_client_id(?)}";
+        return "{call find_client(?)}";
     }
 
     @Override
     protected String findAllStatement() {
-        return "{call find_clients()}";
+        return "{call get_clients()}";
     }
 
     @Override

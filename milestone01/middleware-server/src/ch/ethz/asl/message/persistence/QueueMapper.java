@@ -21,7 +21,7 @@ public class QueueMapper extends AbstractMapper<Queue>{
 
     @Override
     protected java.lang.String findAllStatement() {
-        return "{call find_queues()}";
+        return "{call get_queues()}";
     }
 
     @Override
