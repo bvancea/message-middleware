@@ -170,8 +170,31 @@ public class RequestResponseClient extends Client {
 	
 	@Override
 	public List<Message> readFromSender (int senderId) throws UnsupportedOperationException {
-		
-		throw new UnsupportedOperationException();
+
+        List<Message> messages = null;
+
+        if (messageBroker == null) {
+            log.error("There is no broker connecting to server");
+        } else {
+            if (messageReceiverBroker == null) {
+                messageReceiverBroker = messageBroker.createMessageReceiver();
+            }
+
+            try {
+                messages = messageReceiverBroker.readFromSender(senderId);
+
+            } catch (ServerConnectionException e) {
+                log.error("No connection to server", e);
+            } catch (InvalidAuthenticationException e) {
+                log.error("Client not authenticated", e);
+            } catch (WrongResponseException e) {
+                log.error("Received wrong response from server.", e);
+            } catch (SendMessageException e) {
+                log.error("Could not send command to server.", e);
+            }
+        }
+
+        return messages;
 	}
 
 }

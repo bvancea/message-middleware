@@ -20,6 +20,7 @@ public class MessageMapper extends AbstractMapper<Message> {
     private static final String PEEK_EARLIEST = "{call get_earliest_message(?,?)}";
     private static final String POP_MESSAGES_OF_CLIENT_IN_QUEUES = "{call retrieve_messages_of_client_in_queues(?,?)}";
     private static final String PEEK_MESSAGES_IN_QUEUE = "{call find_messages_from_queue(?)}";
+    private static final String PEEK_MESSAGE_FROM_SENDER = "{call get_messages_sender(?,?)}";
 
     @Override
     protected java.lang.String persistStatement() {
@@ -111,6 +112,42 @@ public class MessageMapper extends AbstractMapper<Message> {
         return returnedList;
     }
 
+    public List<Message> getMessagesFromSender(int receiverId, int senderId) throws SQLException {
+        Connection connection = null;
+        List<Message> returnedMessages = null;
+        try {
+            connection = getConnection();
+            CallableStatement statement = connection.prepareCall(PEEK_MESSAGE_FROM_SENDER);
+            statement.setInt(1, receiverId);
+            statement.setInt(2, senderId);
+
+            returnedMessages = loadAll(statement.executeQuery());
+        } catch (SQLException e) {
+            LOG.error("Database failure. Aborting.", e);
+        } finally {
+            nullSafeCloseConnection(connection);
+        }
+        return returnedMessages;
+    }
+
+    public List<Message> receiveMessagesFromQueues(int receiverId, List<Long> queueIds) throws SQLException {
+        Connection connection = null;
+        List<Message> returnedMessages = null;
+        try {
+            connection = getConnection();
+            CallableStatement statement = connection.prepareCall(POP_MESSAGES_OF_CLIENT_IN_QUEUES);
+            statement.setInt(1, receiverId);
+            statement.setArray(2, connection.createArrayOf("bigint", queueIds.toArray()));
+
+            returnedMessages = loadAll(statement.executeQuery());
+        } catch (SQLException e) {
+            LOG.error("Database failure. Aborting.", e);
+        } finally {
+            nullSafeCloseConnection(connection);
+        }
+        return returnedMessages;
+    }
+
 
     @Override
     public Message loadOne(ResultSet rs) throws SQLException {
@@ -124,5 +161,9 @@ public class MessageMapper extends AbstractMapper<Message> {
         message.setTimestamp(rs.getTimestamp(6));
         message.setContent(rs.getString(7));
         return message;
+    }
+
+    private void nullSafeCloseConnection(Connection connection) throws SQLException {
+        if (connection != null) connection.close();
     }
 }

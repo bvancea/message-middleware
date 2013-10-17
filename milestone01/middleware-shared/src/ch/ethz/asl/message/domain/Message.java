@@ -17,6 +17,17 @@ public class Message {
 
     public Message() { }
 
+    public Message(int id, int sender, int receiver, int priority, int context, List<Long> queue, Timestamp timestamp, String content) {
+        this.id = id;
+        this.sender = sender;
+        this.receiver = receiver;
+        this.priority = priority;
+        this.context = context;
+        this.queue = queue;
+        this.timestamp = timestamp;
+        this.content = content;
+    }
+
     public Message(int sender, int receiver, int priority, int context, List<Long> queue, Timestamp timestamp, String content) {
         this.sender = sender;
         this.receiver = receiver;

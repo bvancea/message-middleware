@@ -144,11 +144,11 @@ public class MessageReceiverBrokerImpl implements MessageReceiverBroker {
 		} else {
 			String[] params = new String[1];
 			params[0] = MessageUtils.encodeList(queues);
-			String sendCommand = MessageUtils.encodeMessage(CommandType.RECEIVE_MESSAGE_FOR_RECEIVER, 
+			String sendCommand = MessageUtils.encodeMessage(CommandType.RECEIVE_MESSAGES_FOR_RECEIVER_FROM_QUEUES,
 					params, connectionID);
 			try {
 				String receivedMessage = communicator.sendMessage(sendCommand);
-				List<Message> messages = (List<Message>) MessageUtils.decodeResponseMessage(CommandType.RECEIVE_MESSAGE_FOR_RECEIVER, receivedMessage);
+				List<Message> messages = (List<Message>) MessageUtils.decodeResponseMessage(CommandType.RECEIVE_MESSAGES_FOR_RECEIVER_FROM_QUEUES, receivedMessage);
 				return messages;
 			} catch (ExecutionException | InterruptedException e) {
 				log.error("Could not send retrieve message command.", e);
@@ -175,7 +175,7 @@ public class MessageReceiverBrokerImpl implements MessageReceiverBroker {
 					params, connectionID);
 			try {
 				String receivedMessage = communicator.sendMessage(sendCommand);
-				List<Message> messages = (List<Message>) MessageUtils.decodeResponseMessage(CommandType.RECEIVE_MESSAGE_FOR_RECEIVER, receivedMessage);
+				List<Message> messages = (List<Message>) MessageUtils.decodeResponseMessage(CommandType.RECEIVE_MESSAGES_FOR_RECEIVER_FROM_QUEUES, receivedMessage);
 				return messages;
 			} catch (ExecutionException | InterruptedException e) {
 				log.error("Could not send retrieve message command.", e);

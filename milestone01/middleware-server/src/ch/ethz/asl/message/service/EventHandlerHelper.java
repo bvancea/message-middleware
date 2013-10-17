@@ -56,8 +56,8 @@ public class EventHandlerHelper {
                     case CommandType.SEND_MESSAGE:
                         returnBuffer = messageService.addMessage(requestParams);
                         break;
-                    case CommandType.RECEIVE_MESSAGE_FOR_RECEIVER:
-                        returnBuffer = messageService.receiveMessageForClient(requestParams);
+                    case CommandType.RECEIVE_MESSAGES_FOR_RECEIVER_FROM_QUEUES:
+                        returnBuffer = messageService.receiveMessageForClientInQeueus(requestParams);
                         break;
                     case CommandType.READ_MESSAGE_EARLIEST:
                         returnBuffer = messageService.readEarliest(requestParams);
@@ -71,8 +71,10 @@ public class EventHandlerHelper {
                     case CommandType.RETRIEVE_MESSAGE_PRIORITY:
                         returnBuffer = messageService.retrievePriority(requestParams);
                         break;
+                    case CommandType.READ_FROM_SENDER:
+                        returnBuffer = messageService.getMessagesForClientFromSender(requestParams);
+                        break;
                     default:
-
                         break;
 
                 }

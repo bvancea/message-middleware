@@ -7,10 +7,7 @@ import ch.ethz.asl.message.domain.Message;
 import ch.ethz.asl.message.domain.Queue;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MessageUtils {
 	
@@ -57,7 +54,6 @@ public class MessageUtils {
                 break;
             case CommandType.READ_MESSAGE_EARLIEST:
             case CommandType.READ_MESSAGE_PRIORITY:
-            case CommandType.RECEIVE_MESSAGE_FOR_RECEIVER:
             case CommandType.RETRIEVE_MESSAGE_EARLIEST:
             case CommandType.RETRIEVE_MESSAGE_PRIORITY:
                 if (isNullEntity(tokens, type)) {
@@ -79,6 +75,18 @@ public class MessageUtils {
                 if (tokens.length < 2) throw new WrongResponseException();
                 response = Integer.parseInt(tokens[1]);
                 break;
+            case CommandType.RECEIVE_MESSAGES_FOR_RECEIVER_FROM_QUEUES:
+                //multiple messages here
+                //commandId, connectionId, messageNumber, <message_1>,<message_1>
+                if (tokens.length < 2) throw new WrongResponseException();
+                if (isEmptyList(tokens, type)) {
+                    return new ArrayList<Message>();
+                } else {
+                    int messageNumber = Integer.parseInt(tokens[2]);
+                    return messagesFromTokens(3,messageNumber, tokens);
+                }
+
+
             default:
                 throw new WrongResponseException();
 		}
@@ -164,16 +172,16 @@ public class MessageUtils {
 					
 					return returnMap;
 				}
-			case CommandType.RECEIVE_MESSAGE_FOR_RECEIVER: 
+			case CommandType.RECEIVE_MESSAGES_FOR_RECEIVER_FROM_QUEUES:
 				//format: command_type,connectionID,[queue_id1 queue_id2 ...]				
 				if (tokens.length < 3) {
 					throw new UnknownRequestFormatException();
 				} else {				
 					String queueList = tokens[2].substring(1, tokens[2].length() - 1);
 					String[] queues = queueList.split(" ");
-					List<Integer> qList = new ArrayList<Integer>();
+					List<Long> qList = new ArrayList<>();
 					for(String q : queues) {
-						qList.add(Integer.parseInt(q));
+						qList.add(Long.parseLong(q));
 					}
 					
 					returnMap.put(MapKey.QUEUE_ID_LIST, qList);
@@ -289,6 +297,33 @@ public class MessageUtils {
         } else {
             return false;
         }
+    }
+
+    private static boolean isEmptyList(String[] tokens, int commandId) {
+        if (tokens.length == 3 && Integer.parseInt(tokens[0]) == commandId && Integer.parseInt(tokens[2]) == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static List<Message> messagesFromTokens(int start, int nr, String[] tokens) {
+
+        List<Message> messages = new ArrayList<>(nr);
+        for (int i = 0; i < nr ; i++) {
+
+            messages.add(i, new Message(
+                Integer.parseInt(tokens[start + i * 8]),        //id
+                Integer.parseInt(tokens[start + i * 8 + 1]),    //sender
+                Integer.parseInt(tokens[start + i * 8 + 2]),    //receiver
+                Integer.parseInt(tokens[start + i * 8 + 3]),    //priority
+                Integer.parseInt(tokens[start + i * 8 + 4]),     //context
+                decodeList(tokens[start + i * 8 + 5]),          //queues
+                new Timestamp(Long.parseLong(tokens[start + i * 8 + 6])), //timestamp
+                tokens[start + i * 8 + 7]                      //content
+            ));
+        }
+        return messages;
     }
 
 }

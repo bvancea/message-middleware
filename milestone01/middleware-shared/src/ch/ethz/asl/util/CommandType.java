@@ -9,7 +9,7 @@ public class CommandType {
 	/**
 	 * query for messages in a list of queues, waiting for the particular receiver
 	 */
-	public final static int RECEIVE_MESSAGE_FOR_RECEIVER = 1; 
+	public final static int RECEIVE_MESSAGES_FOR_RECEIVER_FROM_QUEUES = 1;
 	
 	/**
 	 * create a new queue

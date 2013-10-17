@@ -12,6 +12,9 @@ import ch.ethz.asl.util.MessageUtils;
 
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,12 +43,35 @@ public class MessageService {
         return ByteBuffer.wrap(responseString.getBytes());
     }
 
-    public ByteBuffer receiveMessageForClient(Map<Integer, Object> parameters) {
+    public ByteBuffer receiveMessageForClientInQeueus(Map<Integer, Object> parameters) {
         int connectionId = (Integer) parameters.get(MapKey.CONNECTION_ID);
 
-        //ToDo add stored procedure
-        String[] responseArray = new String[0];
+        String[] responseArray;
+        try {
+            List<Long> queueIds = (List<Long>) parameters.get(MapKey.QUEUE_ID_LIST);
+            List<Message> messages = mapper.receiveMessagesFromQueues(connectionId,queueIds);
+            responseArray = messagesToStringArray(messages);
+        } catch (SQLException e) {
+            LOG.error("Error reading messages from multiple queues " + connectionId, e);
+            responseArray = Errors.encodeError(Errors.DATABASE_FAILURE);
+        }
 
+        String responseString = MessageUtils.encodeMessage(CommandType.FIND_QUEUE, responseArray, connectionId);
+        return ByteBuffer.wrap(responseString.getBytes());
+    }
+
+    public ByteBuffer getMessagesForClientFromSender(Map<Integer, Object> parameters) {
+        int connectionId = (Integer) parameters.get(MapKey.CONNECTION_ID);
+        String[] responseArray;
+
+        int senderId = (Integer) parameters.get(MapKey.SENDER_ID);
+        try {
+            List<Message> messages = mapper.getMessagesFromSender(connectionId, senderId);
+            responseArray = messagesToStringArray(messages);
+        } catch (SQLException e) {
+            LOG.error("Error reading messages of client " + connectionId + " from sender " + senderId, e);
+            responseArray = Errors.encodeError(Errors.DATABASE_FAILURE);
+        }
 
         String responseString = MessageUtils.encodeMessage(CommandType.FIND_QUEUE, responseArray, connectionId);
         return ByteBuffer.wrap(responseString.getBytes());
@@ -132,6 +158,26 @@ public class MessageService {
         } else {
             return new String[0];
         }
+    }
+
+    private String[] messagesToStringArray(List<Message> messages) {
+
+        List<String> tokens = new LinkedList<>(); //faster than array list for appends
+
+        //format: <message_nr>, <message_1_fields> , <message_2_fields>
+        tokens.add(String.valueOf(messages.size()));
+        for (Message message : messages) {
+            tokens.add(String.valueOf(message.getId()));
+            tokens.add(String.valueOf(message.getSender()));
+            tokens.add(String.valueOf(message.getReceiver()));
+            tokens.add(String.valueOf(message.getPriority()));
+            tokens.add(String.valueOf(message.getContext()));
+            tokens.add(MessageUtils.encodeList(message.getQueue()));
+            tokens.add(String.valueOf(message.getTimestamp().getTime()));
+            tokens.add(message.getContent());
+        }
+
+        return tokens.toArray(new String[messages.size() * 8 + 1]);
     }
 
 }
